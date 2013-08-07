@@ -1,5 +1,5 @@
 #include <WiServer.h>
-#include <IRremote.h>
+//#include <IRremote.h>
 #include <dht11.h>
 #include <aJSON.h>
 
@@ -8,11 +8,11 @@ int ANALOG_BUTTON_PIN = 5;
 int ANALOG_LIGHTSENSOR_PIN = 1;
 int ledPin1 = 4;
 
-IRrecv irrecv(RECV_PIN);
-IRsend irsend;
+//IRrecv irrecv(RECV_PIN);
+//IRsend irsend;
 dht11 DHT11;
 
-decode_results results;
+//decode_results results;
 
 #define CR 13
 #define LF 10
@@ -105,8 +105,7 @@ void printData(char* data, int len) {
 	}
 
         if (inData) {
-                
-                //aJsonObject* jsonObject = aJson.parse(start);
+                aJsonObject* jsonObject = aJson.parse(start);
                 //Serial.println(jsonObject->name);
                 Serial.println(start);
                 // Delete from memory:
@@ -116,7 +115,7 @@ void printData(char* data, int len) {
 
 void setup()
 {
-    irrecv.enableIRIn(); // Start the receiver
+    //irrecv.enableIRIn(); // Start the receiver
     DHT11.attach(6);
     Serial.begin(9600);
     
@@ -130,7 +129,6 @@ void setup()
   
     //WiFi.init();
     WiServer.init(NULL);
-    WiServer.enableVerboseMode(false);
     states[0] = false;
     // Have the processData function called when data is returned by the server
     getWeather.setReturnFunc(printData);
@@ -161,6 +159,7 @@ int toggle = 0; // The RC5/6 toggle state
 unsigned long sentLockMillis = 0;
 unsigned long tempLockMillis = 0;
 
+/*
 // Stores the code for later playback
 // Most of this code is just logging
 void storeCode(decode_results *results) {
@@ -243,6 +242,7 @@ void sendCodeOnce() {
     sentLockMillis = time;
   }
 }
+*/
 
 void readTempHumidity() {
     unsigned long time = millis();
@@ -266,26 +266,25 @@ void readTempHumidity() {
       strcpy(request, "/?");
       
       char temp[10];
-      //if (prevTemp > 10) {
+      if (prevTemp > 10) {
         dtostrf(prevTemp, 4, 2, temp);
-      //}
-      //else {
-      //  dtostrf(prevTemp, 4, 3, temp);
-      //}
+      }
+      else {
+        dtostrf(prevTemp, 4, 3, temp);
+      }
       
       char humid[10];
-      //if (prevHumidity > 10) {
+      if (prevHumidity > 10) {
         dtostrf(prevHumidity, 4, 2, humid);
-      //}
-      //else {
-      //  dtostrf(prevHumidity, 4, 3, humid);
-      //}
+      }
+      else {
+        dtostrf(prevHumidity, 4, 3, humid);
+      }
       
       strcat(request, "tmp=");
       strcat(request, temp);
       strcat(request, "&hum=");
       strcat(request, humid);
-      //Serial.println(String("_") + request + String("_"));
 
       tempLockMillis = time;
     }
@@ -307,7 +306,6 @@ void loop()
   
   // Check if it's time to get an update
   if (millis() >= updateTime) {
-    Serial.println("I'm here");
     getWeather.submit();
     // Get another update one hour from now
     updateTime += 1000 * 1;
@@ -316,11 +314,13 @@ void loop()
   // We use analog in as we don't have any other digital
   // inputs, needed for sensors
   if (analogButtonState >= 1000) {
+    /*
     if (irrecv.decode(&results)) {
       storeCode(&results);
       irrecv.resume(); // resume receiver
       irrecv.enableIRIn(); // Restart the receiver
     }
+    */
   }
   else {
     //sendCode();

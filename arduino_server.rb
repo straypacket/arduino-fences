@@ -28,7 +28,7 @@ get '/' do
   	p params["tmp"]
     p params["hum"]
   else
-  	p "Incomplete data"
+  	p "Warning: incomplete data"
   end
   return '{"foo": "1"}'
 end
